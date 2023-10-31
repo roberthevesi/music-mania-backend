@@ -1,14 +1,17 @@
 package musicmania.backend.entities;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.UUID;
 
+@Entity
+@Table(name = "songs")
 public class Song implements Serializable {
-    private UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     private String title;
     private String artist;
     private byte[] audioData;
@@ -19,7 +22,7 @@ public class Song implements Serializable {
         this.audioData = audioData;
     }
 
-    public Song(UUID id, String title, String artist, byte[] audioData) {
+    public Song(long id, String title, String artist, byte[] audioData) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -30,11 +33,11 @@ public class Song implements Serializable {
 
     }
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(long id) {
         this.id = id;
     }
 

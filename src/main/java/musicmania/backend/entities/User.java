@@ -1,50 +1,74 @@
 package musicmania.backend.entities;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.util.UUID;
 
+@Entity
+@Table(name = "users")
 public class User implements Serializable {
-    private UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    private String username;
     private String email;
+    private String firstName;
+    private String lastName;
     private String password;
-    private Integer score;
+    private Integer score = 0;
     private String profilePictureURL;
 
     public User() {
     }
 
-    public User(String email, String password, Integer score, String profilePictureURL) {
+    public User(long id, String username, String email, String firstName, String lastName, String password, Integer score, String profilePictureURL) {
+        this.id = id;
+        this.username = username;
         this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
         this.score = score;
         this.profilePictureURL = profilePictureURL;
     }
 
-    public User(UUID id, String email, String password, Integer score, String profilePictureURL) {
-        this.id = id;
+    public User(String username, String email, String firstName, String lastName, String password) {
+        this.username = username;
         this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
-        this.score = score;
-        this.profilePictureURL = profilePictureURL;
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", password='" + password + '\'' +
                 ", score=" + score +
                 ", profilePictureURL='" + profilePictureURL + '\'' +
                 '}';
     }
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(long id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -53,6 +77,22 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getPassword() {
