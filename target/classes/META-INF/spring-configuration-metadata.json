@@ -1,0 +1,22 @@
+{
+  "groups": [
+    {
+      "name": "rsa",
+      "type": "musicmania.backend.configs.RsaKeyProperties",
+      "sourceType": "musicmania.backend.configs.RsaKeyProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "rsa.private-key",
+      "type": "java.security.interfaces.RSAPrivateKey",
+      "sourceType": "musicmania.backend.configs.RsaKeyProperties"
+    },
+    {
+      "name": "rsa.public-key",
+      "type": "java.security.interfaces.RSAPublicKey",
+      "sourceType": "musicmania.backend.configs.RsaKeyProperties"
+    }
+  ],
+  "hints": []
+}

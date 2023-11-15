@@ -39,7 +39,7 @@ public class UserService {
         );
     }
 
-    public User addUser(User user){
+    public User register(User user){
         if(userRepository.existsByEmail(user.getEmail()))
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Email Already Taken");
 

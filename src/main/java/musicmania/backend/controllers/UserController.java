@@ -30,10 +30,10 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
-    // add new user
-    @PostMapping("/addUser")
+    // register new user
+    @PostMapping("/register")
     public ResponseEntity<User> addUser(@RequestBody User user){
-        return ResponseEntity.ok(userService.addUser(user));
+        return ResponseEntity.ok(userService.register(user));
     }
 
     // update the user's score
