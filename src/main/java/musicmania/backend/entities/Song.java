@@ -4,29 +4,48 @@ package musicmania.backend.entities;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Entity
 @Table(name = "songs")
 public class Song implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "song_id_seq")
+//    @SequenceGenerator(name = "song_id_seq", sequenceName = "song_id_seq", allocationSize = 1)
     private long id;
     private String title;
     private String artist;
-    private byte[] audioData;
+    private String fileURL;
+    private String imageURL;
 
-    public Song(String title, String artist, byte[] audioData) {
-        this.title = title;
-        this.artist = artist;
-        this.audioData = audioData;
+    public String getFileURL() {
+        return fileURL;
     }
 
-    public Song(long id, String title, String artist, byte[] audioData) {
+    public void setFileURL(String songURL) {
+        this.fileURL = songURL;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public Song(long id, String title, String artist, String fileURL, String imageURL) {
         this.id = id;
         this.title = title;
         this.artist = artist;
-        this.audioData = audioData;
+        this.fileURL = fileURL;
+        this.imageURL = imageURL;
+    }
+
+    public Song(String title, String artist) {
+        this.title = title;
+        this.artist = artist;
     }
 
     public Song() {
@@ -55,13 +74,5 @@ public class Song implements Serializable {
 
     public void setArtist(String artist) {
         this.artist = artist;
-    }
-
-    public byte[] getAudioData() {
-        return audioData;
-    }
-
-    public void setAudioData(byte[] audioData) {
-        this.audioData = audioData;
     }
 }
