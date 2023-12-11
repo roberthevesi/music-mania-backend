@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping(path = "/api/users")
 public class UserController {
@@ -20,9 +22,9 @@ public class UserController {
     }
 
     // get user for login
-    @GetMapping("/getUserByCredentials")
-    public ResponseEntity<User> getUserByCredentials(@RequestParam String email, @RequestParam String password){
-        User userResponse = userService.getUserByCredentials(email, password);
+    @GetMapping("/getUser")
+    public ResponseEntity<User> getUser(@RequestParam String email, @RequestParam String password){
+        User userResponse = userService.getUser(email, password);
 
         if(userResponse == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found");
@@ -44,16 +46,29 @@ public class UserController {
 
     // update the user's password
     @PutMapping("/updateUserPassword")
-    public ResponseEntity<User> changeUserPassword(@RequestParam long userId, @RequestParam String oldPassword, @RequestParam String newPassword){
+    public ResponseEntity<User> updateUserPassword(@RequestParam long userId, @RequestParam String oldPassword, @RequestParam String newPassword){
         return ResponseEntity.ok(userService.updateUserPassword(userId, oldPassword, newPassword));
     }
 
+    // update the user's profile picture
     @PostMapping("/updateUserProfilePicture")
-    public ResponseEntity<?> updateUserProfilePicture(@RequestParam long userId, @RequestParam("file") MultipartFile file) {
-//        User updatedUser = userService.updateUserProfilePicture(userId, file);
-//        return ResponseEntity.ok("Profile picture updated successfully. New URL: " + updatedUser.getProfilePictureURL());
-        return null;
+    public ResponseEntity<?> updateUserProfilePicture(@RequestPart("userId") long userId, @RequestPart("file") MultipartFile file) throws IOException {
+        return ResponseEntity.ok(userService.updateUserProfilePicture(userId, file));
     }
 
-    // + recoverPassword endpoint
+    // send forgot password verification code
+    @PutMapping("/sendForgotPasswordCode")
+    public ResponseEntity<?> sendForgotPasswordCode(@RequestParam String email){
+        return ResponseEntity.ok(userService.sendForgotPasswordCode(email));
+    }
+
+    @PutMapping("/verifyCode")
+    public ResponseEntity<?> verifyCode(@RequestParam String verification_code, @RequestParam String email){
+        return ResponseEntity.ok(userService.verifyCode(verification_code, email));
+    }
+
+    @PutMapping("/setNewPassword")
+    public ResponseEntity<?> setNewPassword(@RequestParam String email, @RequestParam String password){
+        return ResponseEntity.ok(userService.setNewPassword(email, password));
+    }
 }

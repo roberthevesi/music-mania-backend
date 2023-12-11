@@ -28,9 +28,15 @@ public class SongController {
         return ResponseEntity.ok(songService.addSong(song, file, image));
     }
 
+    // currently not working due to access denied
+    @DeleteMapping("/deleteSong")
+    public ResponseEntity<Song> deleteSong(@RequestParam long id){
+        return ResponseEntity.ok(songService.deleteSong(id));
+    }
+
     @GetMapping("/getSongs")
-    public List<Song> getFourSongs(@RequestParam long user_id){
-        return songService.getFourSongs(user_id);
+    public ResponseEntity<List<Song>> getFourSongs(@RequestParam long user_id){
+        return ResponseEntity.ok(songService.getFourSongs(user_id));
     }
 
     @GetMapping("/verifySongGuess")

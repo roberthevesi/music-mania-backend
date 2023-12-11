@@ -1,6 +1,7 @@
 package musicmania.backend.services;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,5 +25,14 @@ public class S3Service {
         metadata.setContentLength(file.getSize());
         s3client.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata));
         return s3client.getUrl(bucketName, fileName).toString();
+    }
+
+    public void deleteFile(String bucketName, String fileName){
+        try {
+            s3client.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+        } catch (Exception e){
+            System.err.println("Error occurred: " + e.getMessage());
+            throw e;
+        }
     }
 }

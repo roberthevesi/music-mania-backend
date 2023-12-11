@@ -4,8 +4,10 @@ import jakarta.transaction.Transactional;
 import musicmania.backend.entities.Song;
 import musicmania.backend.repositories.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -35,7 +37,7 @@ public class SongService {
                 fileExtension = fileOriginalFilename.substring(lastDotIndex);
         }
 
-        return String.valueOf(id) + "_" + type + fileExtension;
+        return "songs/" + String.valueOf(id) + "_" + type + fileExtension;
     }
 
     @Transactional
@@ -45,13 +47,33 @@ public class SongService {
         String fileFinalName = getFinalName(song.getId(), "file", file);
         String imageFinalName = getFinalName(song.getId(), "image", image);
 
-        String fileURL = s3Service.uploadFile("music-mania-songs-bucket", file, fileFinalName);
-        String imageURL = s3Service.uploadFile("music-mania-songs-bucket", image, imageFinalName);
+        String fileURL = s3Service.uploadFile("music-mania-s3-bucket", file, fileFinalName);
+        String imageURL = s3Service.uploadFile("music-mania-s3-bucket", image, imageFinalName);
 
         song.setFileURL(fileURL);
         song.setImageURL(imageURL);
 
         songRepository.save(song);
+
+        return song;
+    }
+
+    public String getFileName(String url){
+        String baseURL = "https://music-mania-s3-bucket.s3.eu-west-3.amazonaws.com";
+        return url.substring(baseURL.length());
+    }
+
+    public Song deleteSong(long id){
+        Song song = songRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Song ID Not Found")
+        );
+//        songRepository.delete(song);
+
+        String fileName = getFileName(song.getFileURL());
+        String imageName = getFileName(song.getImageURL());
+
+        s3Service.deleteFile("music-mania-s3-bucket", fileName);
+        s3Service.deleteFile("music-mania-s3-bucket", imageName);
 
         return song;
     }
