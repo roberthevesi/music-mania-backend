@@ -47,11 +47,11 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(new AntPathRequestMatcher("/api/users/register"),
-                                        new AntPathRequestMatcher("/api/users/sendForgotPasswordCode"),
-                                        new AntPathRequestMatcher("/api/users/verifyForgotPasswordCode"),
-                                        new AntPathRequestMatcher("/api/users/setNewPassword"),
-                                        new AntPathRequestMatcher("/api/users/sendNewUserCode"),
-                                        new AntPathRequestMatcher("/api/users/verifyNewUserCode"),
+                                        new AntPathRequestMatcher("/api/users/send-forgot-password-code"),
+                                        new AntPathRequestMatcher("/api/users/verify-forgot-password-code"),
+                                        new AntPathRequestMatcher("/api/users/set-new-password"),
+                                        new AntPathRequestMatcher("/api/users/send-new-user-code"),
+                                        new AntPathRequestMatcher("/api/users/verify-new-user-code"),
                                         new AntPathRequestMatcher("/api/users/get-token")).permitAll() // Permit access to /register and /token for everyone
                                 .anyRequest().authenticated()) // All other requests need authentication
                 .csrf(csrf -> csrf.disable())

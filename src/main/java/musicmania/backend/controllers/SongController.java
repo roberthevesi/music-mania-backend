@@ -23,23 +23,23 @@ public class SongController {
         this.s3Service = s3Service;
     }
 
-    @PutMapping("/addSong")
+    @PutMapping("/add-song")
     public ResponseEntity<Song> addSong(@RequestPart("song") Song song, @RequestPart("file") MultipartFile file, @RequestPart("image") MultipartFile image) throws IOException {
         return ResponseEntity.ok(songService.addSong(song, file, image));
     }
 
     // currently not working due to access denied
-    @DeleteMapping("/deleteSong")
+    @DeleteMapping("/delete-song")
     public ResponseEntity<Song> deleteSong(@RequestParam long id){
         return ResponseEntity.ok(songService.deleteSong(id));
     }
 
-    @GetMapping("/getSongs")
+    @GetMapping("/get-songs")
     public ResponseEntity<List<Song>> getFourSongs(@RequestParam long user_id){
         return ResponseEntity.ok(songService.getFourSongs(user_id));
     }
 
-    @GetMapping("/verifySongGuess")
+    @GetMapping("/verify-song-guess")
     public boolean verifySongGuess(@RequestBody Song song){
         return false;
     }
