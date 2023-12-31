@@ -32,8 +32,19 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
+    // POST check if new user confirms email
+    @PostMapping("/sendNewUserCode")
+    public ResponseEntity<?> sendNewUserCode(@RequestBody User user){
+        return ResponseEntity.ok(userService.sendNewUserCode(user));
+    }
+
+    @PutMapping("/verifyNewUserCode")
+    public ResponseEntity<?> verifyNewUserCode(@RequestParam String verification_code, @RequestParam String email){
+        return ResponseEntity.ok(userService.verifyNewUserCode(verification_code, email));
+    }
+
     // register new user
-    @PostMapping("/register")
+    @PostMapping("/addUser")
     public ResponseEntity<User> addUser(@RequestBody User user){
         return ResponseEntity.ok(userService.register(user));
     }
@@ -57,14 +68,14 @@ public class UserController {
     }
 
     // send forgot password verification code
-    @PutMapping("/sendForgotPasswordCode")
+    @PostMapping("/sendForgotPasswordCode")
     public ResponseEntity<?> sendForgotPasswordCode(@RequestParam String email){
         return ResponseEntity.ok(userService.sendForgotPasswordCode(email));
     }
 
-    @PutMapping("/verifyCode")
-    public ResponseEntity<?> verifyCode(@RequestParam String verification_code, @RequestParam String email){
-        return ResponseEntity.ok(userService.verifyCode(verification_code, email));
+    @PutMapping("/verifyForgotPasswordCode")
+    public ResponseEntity<?> verifyForgotPasswordCode(@RequestParam String verification_code, @RequestParam String email){
+        return ResponseEntity.ok(userService.verifyForgotPasswordCode(verification_code, email));
     }
 
     @PutMapping("/setNewPassword")

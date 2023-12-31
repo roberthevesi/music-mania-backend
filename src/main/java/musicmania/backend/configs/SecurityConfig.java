@@ -17,12 +17,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.time.Duration;
 
 @Configuration
 @EnableWebSecurity
@@ -45,7 +46,13 @@ public class SecurityConfig {
                 .securityMatcher(new AntPathRequestMatcher("/**"))
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers(new AntPathRequestMatcher("/api/users/register"), new AntPathRequestMatcher("/api/users/sendForgotPasswordCode"), new AntPathRequestMatcher("/api/users/verifyCode"), new AntPathRequestMatcher("/api/users/setNewPassword"), new AntPathRequestMatcher("/api/users/get-token")).permitAll() // Permit access to /register and /token for everyone
+                                .requestMatchers(new AntPathRequestMatcher("/api/users/register"),
+                                        new AntPathRequestMatcher("/api/users/sendForgotPasswordCode"),
+                                        new AntPathRequestMatcher("/api/users/verifyForgotPasswordCode"),
+                                        new AntPathRequestMatcher("/api/users/setNewPassword"),
+                                        new AntPathRequestMatcher("/api/users/sendNewUserCode"),
+                                        new AntPathRequestMatcher("/api/users/verifyNewUserCode"),
+                                        new AntPathRequestMatcher("/api/users/get-token")).permitAll() // Permit access to /register and /token for everyone
                                 .anyRequest().authenticated()) // All other requests need authentication
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
@@ -64,9 +71,30 @@ public class SecurityConfig {
         return authProvider;
     }
 
+//    @Bean
+//    JwtDecoder jwtDecoder(){
+//        return NimbusJwtDecoder.withPublicKey(rsaKeyProperties.publicKey()).build();
+//    }
+
     @Bean
-    JwtDecoder jwtDecoder(){
-        return NimbusJwtDecoder.withPublicKey(rsaKeyProperties.publicKey()).build();
+    public JwtDecoder jwtDecoder(RsaKeyProperties rsaKeyProperties) {
+        JWK jwk = new RSAKey.Builder(rsaKeyProperties.publicKey()).privateKey(rsaKeyProperties.privateKey()).build();
+        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(rsaKeyProperties.publicKey()).build();
+
+        // Create a default JWT validator with standard checks (including expiration)
+        OAuth2TokenValidator<Jwt> defaultValidator = JwtValidators.createDefault();
+
+        // Create a custom timestamp validator with some allowed clock skew
+        JwtTimestampValidator timestampValidator = new JwtTimestampValidator(Duration.ofMinutes(1));
+
+        // Combine the validators
+        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<Jwt>(defaultValidator, timestampValidator);
+
+        jwtDecoder.setJwtValidator(validator);
+
+        return jwtDecoder;
     }
 
     @Bean

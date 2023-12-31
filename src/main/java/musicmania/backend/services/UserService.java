@@ -3,6 +3,8 @@ package musicmania.backend.services;
 import jakarta.transaction.Transactional;
 import musicmania.backend.entities.User;
 import musicmania.backend.entities.VerificationCode;
+import musicmania.backend.handlers.*;
+import musicmania.backend.models.VerificationCodeType;
 import musicmania.backend.repositories.UserRepository;
 import musicmania.backend.repositories.VerificationCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 @Service
 public class UserService {
@@ -53,6 +53,39 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User ID Not Found")
         );
+    }
+
+    public VerificationCode sendNewUserCode(User user){
+        if(userRepository.existsByEmail(user.getEmail()))
+            throw new EmailAlreadyTakenException("Email Already Taken");
+
+        if(userRepository.existsByUsername(user.getUsername()))
+            throw new UsernameAlreadyTakenException("Username Already Taken");
+
+        return sendVerificationCode(user, VerificationCodeType.ACCOUNT_CREATION);
+    }
+
+    public VerificationCode sendForgotPasswordCode(String email){
+        User user = userRepository.findUserByEmail(email).orElseThrow(
+                () -> new UserEmailNotFoundException("Email Not Found")
+        );
+
+        return sendVerificationCode(user, VerificationCodeType.PASSWORD_RESET);
+    }
+
+    @Transactional
+    public VerificationCode sendVerificationCode(User user, VerificationCodeType type){
+        LocalDateTime now = LocalDateTime.now();
+
+        VerificationCode verificationCode = new VerificationCode(user.getEmail(), now, now.plusMinutes(10), type);
+        verificationCodeRepository.save(verificationCode);
+
+        if(type == VerificationCodeType.PASSWORD_RESET)
+            emailService.sendEmail(user.getEmail(), "Password Reset Code", "You have requested a password reset. The verification code is " + verificationCode.getCode() + ".\nIf you did not make this request, you can simply ignore this message.");
+        else if(type == VerificationCodeType.ACCOUNT_CREATION)
+            emailService.sendEmail(user.getEmail(), "New Account Code", "You have requested a new account. The verification code is " + verificationCode.getCode() + ".\nIf you did not make this request, you can simply ignore this message.");
+
+        return verificationCode;
     }
 
     public User register(User user){
@@ -130,51 +163,30 @@ public class UserService {
         return user;
     }
 
-    public String generateCode(){
-        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        int LENGTH = 6;
-
-        Random random = new SecureRandom();
-        StringBuilder code = new StringBuilder();
-
-        for (int i = 0; i < LENGTH; i++) {
-            int index = random.nextInt(CHARACTERS.length());
-            code.append(CHARACTERS.charAt(index));
-        }
-
-        return code.toString();
-    }
-
     @Transactional
-    public VerificationCode sendForgotPasswordCode(String email){
-        User user = userRepository.findUserByEmail(email).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Email Not Found")
-        );
-
-        LocalDateTime now = LocalDateTime.now();
-        String code = generateCode();
-
-        VerificationCode verificationCode = new VerificationCode(user.getEmail(), code, now, now.plusMinutes(10));
-        verificationCodeRepository.save(verificationCode);
-
-        emailService.sendEmail(user.getEmail(), "Password Reset Code", "You have requested a password reset. The generated code is " + code + ". If you did not request this code, you can simply ignore this message.");
-
-        return verificationCode;
-    }
-
-    @Transactional
-    public boolean verifyCode(String verification_code, String email){
+    public boolean verifyCode(String code, String email, VerificationCodeType type){
         LocalDateTime now = LocalDateTime.now();
 
-        VerificationCode verificationCode = verificationCodeRepository.findValidCode(verification_code, email, now);
+        VerificationCode verificationCode = verificationCodeRepository.findValidCode(code, email, now, type);
 
-        if(verificationCode == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Verification Code Not Correct");
-        }
+        if(verificationCode == null)
+            throw new IncorrectVerificationCodeException("Incorrect Verification Code");
+
+        if(verificationCode.isUsed())
+            throw new UsedVerificationCodeException("Used Verification Code");
 
         verificationCode.setUsed(true);
+        verificationCodeRepository.save(verificationCode);
 
         return true;
+    }
+
+    public boolean verifyNewUserCode(String code, String email){
+        return verifyCode(code, email, VerificationCodeType.ACCOUNT_CREATION);
+    }
+
+    public boolean verifyForgotPasswordCode(String code, String email){
+        return verifyCode(code, email, VerificationCodeType.PASSWORD_RESET);
     }
 
     @Transactional
