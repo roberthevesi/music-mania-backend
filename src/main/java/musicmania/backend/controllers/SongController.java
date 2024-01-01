@@ -23,7 +23,7 @@ public class SongController {
         this.s3Service = s3Service;
     }
 
-    @PutMapping("/add-song")
+    @PostMapping("/add-song")
     public ResponseEntity<Song> addSong(@RequestPart("song") Song song, @RequestPart("file") MultipartFile file, @RequestPart("image") MultipartFile image) throws IOException {
         return ResponseEntity.ok(songService.addSong(song, file, image));
     }
@@ -37,10 +37,5 @@ public class SongController {
     @GetMapping("/get-songs")
     public ResponseEntity<List<Song>> getFourSongs(@RequestParam long user_id){
         return ResponseEntity.ok(songService.getFourSongs(user_id));
-    }
-
-    @GetMapping("/verify-song-guess")
-    public boolean verifySongGuess(@RequestBody Song song){
-        return false;
     }
 }

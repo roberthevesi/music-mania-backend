@@ -191,7 +191,6 @@ public class UserService {
 
     @Transactional
     public User setNewPassword(String email, String newPassword){
-
         User user = userRepository.findUserByEmail(email).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Email Not Found")
         );
