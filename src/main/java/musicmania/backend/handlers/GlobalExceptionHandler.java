@@ -28,6 +28,13 @@ public class GlobalExceptionHandler {
                 .body(e.getMessage());
     }
 
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<String> handleIncorrectPassword(IncorrectPasswordException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_ACCEPTABLE)
+                .body(e.getMessage());
+    }
+
     @ExceptionHandler(IncorrectVerificationCodeException.class)
     public ResponseEntity<String> handleIncorrectVerificationCode(IncorrectVerificationCodeException e) {
         return ResponseEntity
@@ -39,6 +46,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUsedVerificationCode(UsedVerificationCodeException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_ACCEPTABLE)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleUserNotFound(UserNotFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
     }
 
