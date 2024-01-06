@@ -37,8 +37,8 @@ public class UserController {
     }
 
     // register new user
-    @PostMapping("/add-user")
-    public ResponseEntity<User> addUser(@RequestBody User user){
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody User user){
         return ResponseEntity.ok(userService.register(user));
     }
 
@@ -76,5 +76,10 @@ public class UserController {
     @PutMapping("/set-new-password")
     public ResponseEntity<?> setNewPassword(@RequestParam String email, @RequestParam String password){
         return ResponseEntity.ok(userService.setNewPassword(email, password));
+    }
+
+    @DeleteMapping("/delete-user")
+    public void deleteUser(@RequestParam long userId){
+        userService.deleteUser(userId);
     }
 }

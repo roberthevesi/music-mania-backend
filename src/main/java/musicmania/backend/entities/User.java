@@ -3,7 +3,6 @@ package musicmania.backend.entities;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -13,8 +12,6 @@ public class User implements Serializable {
     private long id;
     private String username;
     private String email;
-    private String firstName;
-    private String lastName;
     private String password;
     private Integer score = 0;
     private String profilePictureURL;
@@ -22,22 +19,18 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(long id, String username, String email, String firstName, String lastName, String password, Integer score, String profilePictureURL) {
+    public User(long id, String username, String email, String password, Integer score, String profilePictureURL) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
         this.password = password;
         this.score = score;
         this.profilePictureURL = profilePictureURL;
     }
 
-    public User(String username, String email, String firstName, String lastName, String password) {
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
         this.password = password;
     }
 
@@ -47,8 +40,6 @@ public class User implements Serializable {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
                 ", password='" + password + '\'' +
                 ", score=" + score +
                 ", profilePictureURL='" + profilePictureURL + '\'' +
@@ -77,22 +68,6 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getPassword() {

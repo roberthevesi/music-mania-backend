@@ -88,8 +88,4 @@ public class SongService {
 
         return songs;
     }
-
-    public boolean verifySongGuess(Song song){
-        return false;
-    }
 }

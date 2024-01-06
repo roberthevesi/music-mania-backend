@@ -47,12 +47,13 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(new AntPathRequestMatcher("/api/users/register"),
+                                        new AntPathRequestMatcher("/api/users/get-user"),
                                         new AntPathRequestMatcher("/api/users/send-forgot-password-code"),
                                         new AntPathRequestMatcher("/api/users/verify-forgot-password-code"),
                                         new AntPathRequestMatcher("/api/users/set-new-password"),
                                         new AntPathRequestMatcher("/api/users/send-new-user-code"),
                                         new AntPathRequestMatcher("/api/users/verify-new-user-code"),
-                                        new AntPathRequestMatcher("/api/users/get-token")).permitAll() // Permit access to /register and /token for everyone
+                                        new AntPathRequestMatcher("/api/users/get-token")).permitAll() // Permit access to these for everyone
                                 .anyRequest().authenticated()) // All other requests need authentication
                 .csrf(csrf -> csrf.disable())
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)

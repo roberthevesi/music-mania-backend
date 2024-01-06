@@ -45,6 +45,7 @@ public class UserService {
             throw new IncorrectPasswordException("Incorrect Password");
 
         return user;
+
     }
 
     public VerificationCode sendNewUserCode(User user){
@@ -162,10 +163,12 @@ public class UserService {
         VerificationCode verificationCode = verificationCodeRepository.findValidCode(code, email, now, type);
 
         if(verificationCode == null)
-            throw new IncorrectVerificationCodeException("Incorrect Verification Code");
+            return false;
+//            throw new IncorrectVerificationCodeException("Incorrect Verification Code");
 
         if(verificationCode.isUsed())
-            throw new UsedVerificationCodeException("Used Verification Code");
+            return false;
+//            throw new UsedVerificationCodeException("Used Verification Code");
 
         verificationCode.setUsed(true);
         verificationCodeRepository.save(verificationCode);
@@ -192,11 +195,20 @@ public class UserService {
 
         String newPasswordEncoded = passwordEncoder.encode(newPassword);
 
-        if(newPasswordEncoded.equals(user.getPassword()))
-            throw new IncorrectPasswordException("New Password Cannot Be Equal To Old Password");
+//        if(newPasswordEncoded.equals(user.getPassword()))
+//        if(passwordEncoder.matches(newPassword, user.getPassword()))
+//            throw new IncorrectPasswordException("New Password Cannot Be Equal To Old Password");
 
         user.setPassword(newPasswordEncoded);
 
         return user;
+    }
+
+    @Transactional
+    public void deleteUser(long userId){
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException("User Not Found")
+        );
+        userRepository.delete(user);
     }
 }
