@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,5 +30,5 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDetailsSe
     }
 
     Optional<User> findByUsername(String username);
-
+    List<User> findTop10ByOrderByScoreDesc();
 }

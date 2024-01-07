@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/users")
@@ -20,6 +21,7 @@ public class UserController {
     }
 
     // get user for login
+    @CrossOrigin(origins = "http://localhost:80812")
     @GetMapping("/get-user")
     public ResponseEntity<User> getUser(@RequestParam String email, @RequestParam String password){
         return ResponseEntity.ok(userService.getUser(email, password));
@@ -81,5 +83,10 @@ public class UserController {
     @DeleteMapping("/delete-user")
     public void deleteUser(@RequestParam long userId){
         userService.deleteUser(userId);
+    }
+
+    @GetMapping("/get-top10-users")
+    public ResponseEntity<List<User>> getTop10Users(){
+        return ResponseEntity.ok(userService.getTop10Users());
     }
 }
