@@ -91,6 +91,7 @@ public class UserService {
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
+        user.setProfilePictureURL("https://music-mania-s3-bucket.s3.eu-west-3.amazonaws.com/users/profile-pictures/generic-user.jpg");
 
         return userRepository.save(user);
     }
