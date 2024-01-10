@@ -58,8 +58,8 @@ public class UserController {
 
     // update the user's profile picture
     @PutMapping("/update-user-profile-picture")
-    public ResponseEntity<?> updateUserProfilePicture(@RequestPart("userId") long userId, @RequestPart("file") MultipartFile file) throws IOException {
-        return ResponseEntity.ok(userService.updateUserProfilePicture(userId, file));
+    public ResponseEntity<?> updateUserProfilePicture(@RequestPart("userId") String userId, @RequestPart("file") MultipartFile file) throws IOException {
+        return ResponseEntity.ok(userService.updateUserProfilePicture(Long.parseLong(userId), file));
     }
 
     // send forgot password verification code

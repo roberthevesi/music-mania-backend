@@ -15,7 +15,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class BackendApplication {
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.load();
+//		Dotenv dotenv = Dotenv.load();
+		Dotenv dotenv = Dotenv.configure()
+						.directory("./.env")
+								.load();
 		SpringApplication.run(BackendApplication.class, args);
 	}
 }
