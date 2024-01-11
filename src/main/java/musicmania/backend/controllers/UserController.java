@@ -1,5 +1,6 @@
 package musicmania.backend.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import musicmania.backend.entities.User;
 import musicmania.backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ public class UserController {
     }
 
     // get user for login
-    @CrossOrigin(origins = "http://localhost:80812")
     @GetMapping("/get-user")
     public ResponseEntity<User> getUser(@RequestParam String email, @RequestParam String password){
         return ResponseEntity.ok(userService.getUser(email, password));
@@ -29,7 +29,7 @@ public class UserController {
 
     // POST check if new user confirms email
     @PostMapping("/send-new-user-code")
-    public ResponseEntity<?> sendNewUserCode(@RequestBody User user){
+    public ResponseEntity<?> sendNewUserCode(@RequestBody User user) throws JsonProcessingException {
         return ResponseEntity.ok(userService.sendNewUserCode(user));
     }
 
@@ -64,7 +64,7 @@ public class UserController {
 
     // send forgot password verification code
     @PostMapping("/send-forgot-password-code")
-    public ResponseEntity<?> sendForgotPasswordCode(@RequestParam String email){
+    public ResponseEntity<?> sendForgotPasswordCode(@RequestParam String email) throws JsonProcessingException {
         return ResponseEntity.ok(userService.sendForgotPasswordCode(email));
     }
 

@@ -1,5 +1,6 @@
 package musicmania.backend.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import musicmania.backend.entities.User;
 import musicmania.backend.entities.VerificationCode;
@@ -49,7 +50,7 @@ public class UserService {
 
     }
 
-    public VerificationCode sendNewUserCode(User user){
+    public VerificationCode sendNewUserCode(User user) throws JsonProcessingException {
         if(userRepository.existsByEmail(user.getEmail()))
             throw new EmailAlreadyTakenException("Email Already Taken");
 
@@ -59,7 +60,7 @@ public class UserService {
         return sendVerificationCode(user, VerificationCodeType.ACCOUNT_CREATION);
     }
 
-    public VerificationCode sendForgotPasswordCode(String email){
+    public VerificationCode sendForgotPasswordCode(String email) throws JsonProcessingException {
         User user = userRepository.findUserByEmail(email).orElseThrow(
                 () -> new UserEmailNotFoundException("Email Not Found")
         );
@@ -68,7 +69,7 @@ public class UserService {
     }
 
     @Transactional
-    public VerificationCode sendVerificationCode(User user, VerificationCodeType type){
+    public VerificationCode sendVerificationCode(User user, VerificationCodeType type) throws JsonProcessingException {
         LocalDateTime now = LocalDateTime.now();
 
         VerificationCode verificationCode = new VerificationCode(user.getEmail(), now, now.plusMinutes(10), type);
