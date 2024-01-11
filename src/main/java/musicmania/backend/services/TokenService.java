@@ -21,7 +21,7 @@ public class TokenService {
     public String generateToken(Authentication authentication){
         long currentTimeMillis = System.currentTimeMillis();
         Date issuedAt = new Date(currentTimeMillis);
-        Date expiresAt = new Date(currentTimeMillis + (60 * 60 * 1000));
+        Date expiresAt = new Date(currentTimeMillis + (60 * 60 * 1000 * 24));
 
         String scope = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

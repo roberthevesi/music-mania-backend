@@ -23,9 +23,14 @@ public class SongController {
         this.s3Service = s3Service;
     }
 
+//    @PostMapping("/add-song")
+//    public ResponseEntity<Song> addSong(@RequestPart("song") Song song, @RequestPart("file") MultipartFile file, @RequestPart("image") MultipartFile image) throws IOException {
+//        return ResponseEntity.ok(songService.addSong(song, file, image));
+//    }
+
     @PostMapping("/add-song")
-    public ResponseEntity<Song> addSong(@RequestPart("song") Song song, @RequestPart("file") MultipartFile file, @RequestPart("image") MultipartFile image) throws IOException {
-        return ResponseEntity.ok(songService.addSong(song, file, image));
+    public ResponseEntity<Song> addSong(@RequestPart("artist") String artist, @RequestPart("title") String title, @RequestPart("file") MultipartFile file, @RequestPart("image") MultipartFile image) throws IOException, IOException {
+        return ResponseEntity.ok(songService.addSong(artist, title, file, image));
     }
 
     // currently not working due to access denied

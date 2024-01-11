@@ -41,7 +41,8 @@ public class SongService {
     }
 
     @Transactional
-    public Song addSong(Song song, MultipartFile file, MultipartFile image) throws IOException {
+    public Song addSong(String artist, String title, MultipartFile file, MultipartFile image) throws IOException {
+        Song song = new Song(title, artist);
         song = songRepository.save(song);
 
         String fileFinalName = getFinalName(song.getId(), "file", file);
