@@ -1,8 +1,4 @@
 spring:
-#  datasource:
-#    url: ${MUSIC_MANIA_AWS_RDS_DB_URL}
-#    username: ${MUSIC_MANIA_AWS_RDS_DB_USERNAME}
-#    password: ${MUSIC_MANIA_AWS_RDS_DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update

@@ -8,40 +8,43 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class EmailService {
     @Autowired
-    private SecretsManagerService secretsManagerService;
-    Dotenv dotenv = Dotenv.load();
-
-    BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
-            Objects.requireNonNull(dotenv.get("AWS_ACCESS_KEY_ID")),
-            Objects.requireNonNull(dotenv.get("AWS_SECRET_ACCESS_KEY"))
-    );
+    private final SecretsManagerService secretsManagerService;
     private final AmazonSimpleEmailService sesClient;
 
-    public EmailService() {
+    @Autowired
+    public EmailService(SecretsManagerService secretsManagerService) throws JsonProcessingException {
+        this.secretsManagerService = secretsManagerService;
+
+        String secretJson = secretsManagerService.getSecretJson("MUSIC_MANIA_AWS_CREDENTIALS");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, String> secretData = objectMapper.readValue(secretJson, Map.class);
+
+        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(
+                secretData.get("AWS_ACCESS_KEY_ID"),
+                secretData.get("AWS_SECRET_ACCESS_KEY")
+        );
+
         this.sesClient = AmazonSimpleEmailServiceClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                .withRegion(Regions.EU_WEST_3) // Use your appropriate AWS region
+                .withRegion(Regions.EU_WEST_3)
                 .build();
     }
 
     public void sendEmail(String to, String subject, String body) throws JsonProcessingException {
-        String secretJson = secretsManagerService.getSecret("SES_VERIFIED_ACCOUNT");
+        String secretJson = secretsManagerService.getSecretJson("SES_VERIFIED_ACCOUNT");
 
-        // Use Jackson's ObjectMapper to parse the JSON
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> secretData = objectMapper.readValue(secretJson, Map.class);
 
-        // Extract the email value
         String sender = secretData.get("data");
 
         SendEmailRequest request = new SendEmailRequest()
@@ -58,7 +61,6 @@ public class EmailService {
                                 )
                 )
                 .withSource(sender); // Use your verified email address
-//                .withSource(dotenv.get("SES_VERIFIED_ACCOUNT")); // Use your verified email address
 
         sesClient.sendEmail(request);
     }

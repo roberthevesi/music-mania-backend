@@ -20,7 +20,7 @@ public class DataSourceConfig {
     @Bean
     public DataSource dataSource() throws IOException {
         String secretName = "MUSIC_MANIA_AWS_RDS_CREDENTIALS";
-        String secretJson = secretsManagerService.getSecret(secretName);
+        String secretJson = secretsManagerService.getSecretJson(secretName);
 
         // Use Jackson's ObjectMapper to parse the JSON
         ObjectMapper objectMapper = new ObjectMapper();
